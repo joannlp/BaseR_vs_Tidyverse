@@ -72,3 +72,25 @@ df3 <- df3 %>%
                            ifelse(up == down, coalesce(up, down), NA)))
 
 ```
+
+```{r}
+##in class solution base R
+#sentinals are values that cannot be taken as data, such as NA
+df4 <- tibble(value = list(0,0,1,0,0,0,0,1,1,0,0,0,0,0))
+df4$idx = 1:nrow(df4)
+df4$closest_up = rep(NA, nrow(df4))
+df4$closest_up[df4$value == 1] = df4$idx[df4$value == 1]
+### will not be solved in class
+
+##tidyverse solution... not exactly the same solution
+x <- tibble(value = list(0,0,1,0,0,0,0,1,1,0,0,0,0,0))
+x <- x %>% mutate(idx = 1:n()) %>%
+  mutate(lindex = ifelse(value == 1, idx, NA),
+         rindex = ifelse(value ==1, idx, NA)) %>%
+  fill(lindex) %>%
+  fill(rindex, .direction = c('up')) %>%
+  mutate(lindex2 = replace_na(lindex, .Machine$integer.max),
+         rindex2 = replace_na(rindex, .Machine$integer.max),
+         closest = idx + pmin(lindex2-idx, rindex2-idx))
+
+```
