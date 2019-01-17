@@ -48,7 +48,6 @@ colnames(df1)[2] <- "closest"
 
 ###Using the tidyverse
 ```{r}
-#you might be adding about 5 columns and removing 5 columns
 df2 <- tibble(value = list(0,0,1,0,0,0,0,1,1,0,0,0,0,0))
 df2 <- df2 %>%
   mutate(position = as.numeric(rownames(df2)),
@@ -59,11 +58,17 @@ df2 <- df2 %>%
   
 ```
 
+```{r}
 ###does not work yet...
 df3 <- tibble(value = list(0,0,1,0,0,0,0,1,1,0,0,0,0,0))
 df3 <- df3 %>%
   mutate(position = as.numeric(rownames(df2)),
-         hitposition.return = ifelse(value > 0, position, NA)) %>%
-  replace_na(nearest))
-           
+         hitposition.return = ifelse(value > 0, position, NA),
+         up = hitposition.return,
+         down = hitposition.return) %>%
+  fill(up, .direction = c("up")) %>%
+  fill(down, .direction = c("down")) %>%
+  mutate(new.test = ifelse(is.na(up) | is.na(down) ,coalesce(up, down), 
+                           ifelse(up == down, coalesce(up, down), NA)))
+
 ```
