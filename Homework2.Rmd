@@ -1,0 +1,74 @@
+---
+title: "Homework2_baseR_vs_tidyverse"
+author: "Joann Phan"
+output: html_document
+---
+
+## Homework 2
+
+###Using base R
+
+```{r}
+#read in the data
+df1 <- as.data.frame(c(0,0,1,0,0,0,0,1,1,0,0,0,0,0))
+colnames(df1) <- c("value")
+
+df1$position <- row(df1)
+df1$hitposition.return <- ifelse(df1$value==1, df1$position, 
+                        ifelse(df1$value==0, 0, NA))
+
+df1$hitposition.return[df1$hitposition.return==0] <- NA
+
+#function from stack overflow
+f1 <- function(x) {
+  N <- length(x)
+  na.pos <- which(is.na(x))
+  if (length(na.pos) %in% c(0, N)) {
+    return(x)
+  }
+  non.na.pos <- which(!is.na(x))
+  intervals  <- findInterval(na.pos, non.na.pos,
+                             all.inside = TRUE)
+  left.pos   <- non.na.pos[pmax(1, intervals)]
+  right.pos  <- non.na.pos[pmin(N, intervals+1)]
+  left.dist  <- na.pos - left.pos
+  right.dist <- right.pos - na.pos
+
+  x[na.pos] <- ifelse(left.dist <= right.dist,
+                        x[left.pos], x[right.pos])
+  return(x)
+}
+
+df1 <- as.data.frame(apply(df1, 2, f1))
+
+df1 <- df1[,c(1,3)]
+colnames(df1)[2] <- "closest"
+
+```
+
+###Using the tidyverse
+```{r}
+df2 <- tibble(value = list(0,0,1,0,0,0,0,1,1,0,0,0,0,0))
+df2 <- df2 %>%
+  mutate(position = as.numeric(rownames(df2)),
+         hitposition.return = ifelse(value > 0, position, NA)) %>%
+  map_df(., f1) %>%
+  select(., value, hitposition.return) %>%
+  rename(., closest = hitposition.return)
+  
+```
+
+```{r}
+###does not work yet...
+df3 <- tibble(value = list(0,0,1,0,0,0,0,1,1,0,0,0,0,0))
+df3 <- df3 %>%
+  mutate(position = as.numeric(rownames(df2)),
+         hitposition.return = ifelse(value > 0, position, NA),
+         up = hitposition.return,
+         down = hitposition.return) %>%
+  fill(up, .direction = c("up")) %>%
+  fill(down, .direction = c("down")) %>%
+  mutate(new.test = ifelse(is.na(up) | is.na(down) ,coalesce(up, down), 
+                           ifelse(up == down, coalesce(up, down), NA)))
+
+```
