@@ -1,0 +1,153 @@
+---
+title: "Lab2_python_vs_R"
+author: "Joann Phan"
+date: "1/17/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+##File processing in Python
+1. How do you ask if a file exists?
+```{python}
+#where fname is the name of your file
+import os
+os.path.isfile(fname) 
+```
+
+2. How to you ask if a file is a directory?
+```{python}
+import os
+os.path.isfile('/path/to/file')
+```
+
+3. How do you remove (delete) a file?
+```{python}
+import os
+os.remove("ChangedFile.csv")
+print("File Removed!")
+```
+
+4. How do you get the size of a file?
+```{python}
+import os
+statinfo = os.stat('file.txt')
+statinfo.st_size
+```
+
+5. How do you get all the file names matching a pattern?
+```{python}
+import glob
+for name in glob.glob('dir/*[0-9].*'):
+    print name
+```
+
+6. How do you get all the file names matching a pattern recursively?
+```{python}
+import glob
+for filename in glob.iglob('src/**/*.c', recursive=True):
+    print(filename)
+```
+
+7. How do you get an iterator to all files matching a pattern, as opposed to returning a potentially huge list?
+```{python}
+import glob
+for f in glob.iglob(pathname, *, recursive=False):
+        print(f)
+```
+
+8. How do you open gzip-compressed files for reading and for writing?
+```{python}
+#reading
+import gzip
+import io
+gz = gzip.open(in_path, 'rb')
+f = io.BufferedReader(gz)
+     for line in f.readlines():
+         # do stuff
+gz.close()
+
+#writing
+f = gzip.open(out_path, 'wb')
+try:
+    f.writelines(lines)
+finally:
+    f.close()
+```
+
+##In R
+Same questions. Except 7, which has no analog.
+
+use stringr in r
+
+1. How do you ask if a file exists?
+```{r}
+file.exists("~/Documents/AdvInformatics2019Assignment1/questions.md")
+```
+
+2. How to you ask if a file is a directory?
+```{r}
+dir.exists("~/Documents")
+```
+
+3. How do you remove (delete) a file?
+```{r}
+file.remove("filename.csv")
+```
+
+4. How do you get the size of a file?
+```{r}
+file.info("~/Documents/CMB_MBB/Classes/Adv_BioInformatics_283/Homework2.Rmd")
+```
+
+5. How do you get all the file names matching a pattern?
+```{r}
+list.files(pattern = ".pdf")
+```
+
+6. How do you get all the file names matching a pattern recursively?
+```{r}
+list.files(pattern = ".pdf", recursive = TRUE)
+```
+
+8. How do you open gzip-compressed files for reading and for writing?
+```{r}
+read.table("filename.gz")
+```
+
+##Test file
+Generate a list of those output files that were not created
+
+##In R
+```{r}
+library(tidyverse)
+#the only files in the data and output files are what are in the original downloaded file
+setwd("~/Documents/CMB_MBB/Classes/Adv_BioInformatics_283/Lab2_python_vs_R/lab2data/")
+list_files <- list.files(recursive = TRUE, full.names = FALSE)
+list_files <- list_files %>%
+  gsub(data, pattern = "data/datafile.", replacement = "") %>%
+  gsub(., pattern = "output/outfile.", replacement = "") %>%
+  gsub(., pattern = ".txt", replacement = "") %>%
+  gsub(., pattern = ".out", replacement = "")
+
+new_list <- unique(list_files)
+new_list <- paste0("outfile.", new_list, ".out")
+```
+
+##In python
+```{python}
+import glob
+import os.path
+unique=[]
+for file in glob.glob('/Users/JoannPhan/Documents/CMB_MBB/Classes/Adv_BioInformatics_283/Lab2_python_vs_R/lab2data/*/*'):
+ 	base=os.path.basename(file)
+ 	rawfile=os.path.splitext(base)[0]
+ 	raw2=rawfile.split(".",1)[1]
+ 	for i in raw2:
+		 unique.append(raw2)
+myset = set(unique)
+no_outfile = ['outfile.' + x + '.out' for x in myset]
+print(no_outfile)
+```
