@@ -134,6 +134,7 @@ list_files <- list_files %>%
 
 new_list <- unique(list_files)
 new_list <- paste0("outfile.", new_list, ".out")
+write.csv(new_list, "missing_output.csv")
 ```
 
 ##In python
@@ -151,3 +152,6 @@ myset = set(unique)
 no_outfile = ['outfile.' + x + '.out' for x in myset]
 print(no_outfile)
 ```
+
+Which was easier?
+Response: I thought using R was easier because I am more familiar with R than with python. 
