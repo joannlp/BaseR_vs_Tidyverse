@@ -1,1 +1,1 @@
-# R versus python in remaning files
+# R versus python in renaming files
