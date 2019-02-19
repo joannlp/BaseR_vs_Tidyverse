@@ -1,1 +1,1 @@
-# Homework assignments for EcoEvo283
+# Keeping track of file organization
